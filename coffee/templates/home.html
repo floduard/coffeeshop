@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    .button-container {
+            display: flex;
+            flex-direction: row;
+            gap: 10px; /* Space between buttons */
+        }
+        .button {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            gap: 10px;
+            text-align: left;
+        }
+        .button.comment {
+            background-color: #007bff; /* Blue */
+        }
+        .button.like {
+            background-color: #28a745; /* Green */
+        }
+        .button.rate {
+            background-color: #ffc107; /* Yellow */
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+   
+</style>
+<h1>Feel Good Coffee</h1>
+
+<div class="row"> 
+    {% for coffee in coffee_l %}
+         <div class="col">
+         <div class="card" style="width: 18rem;">
+            <img style="width: auto;height: 150px;" src="{{ coffee.image }}" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{ coffee.name }}</h5>
+              <p class="card-text">${{ coffee.price }}</p>
+
+
+              <div class="button-container">
+                <button class="button comment">
+                    <i class="fas fa-comment"></i>
+            
+                </button>
+                <button class="button like">
+                    <i class="fas fa-thumbs-up"></i>
+                </button>
+                <button class="button rate">
+                    <i class="fas fa-star"></i>
+        
+                </button>
+            </div>
+        
+            </div>
+           </div>
+         </div>
+
+
+     
+    <script>
+      function sendAction(action) {
+          fetch('/handle-action/', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': getCookie('csrftoken') // For Django CSRF protection
+              },
+              body: JSON.stringify({ action: action })
+          })
+          .then(response => response.json())
+          .then(data => {
+              const messageElement = document.getElementById('response-message');
+              messageElement.textContent = data.message;
+              messageElement.style.color = data.status === 'success' ? 'green' : 'red';
+          })
+          .catch((error) => {
+              console.error('Error:', error);
+          });
+      }
+
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+  </script>
+
+    {% endfor %}  
+{% endblock %}
